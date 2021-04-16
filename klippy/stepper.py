@@ -341,7 +341,8 @@ class PrinterRail:
         self.steppers.append(stepper)
         if self.endstops and config.get('endstop_pin', None) is None:
             # No endstop defined - use primary endstop
-            self.endstops[0][0].add_stepper(stepper)
+            if config.get('endstop_of', None) is None:
+                self.endstops[0][0].add_stepper(stepper)
             return
         printer = config.get_printer()
         ppins = printer.lookup_object('pins')
@@ -374,4 +375,37 @@ def LookupMultiRail(config):
         if not config.has_section(config.get_name() + str(i)):
             break
         rail.add_extra_stepper(config.getsection(config.get_name() + str(i)))
+
+    # Link any stepper endstops
+    for stepper in rail.steppers:
+        section = config.getsection(stepper.get_name())
+
+        endstop_of = section.get('endstop_of', None)
+        if endstop_of is None:
+            continue
+
+        if section.get('endstop_pin', None) is not None:
+            raise section.error("Stepper %s cannot specify both endstop_of"
+                " and endstop_pin" % (stepper.get_name(),))
+
+        if endstop_of == stepper.get_name():
+            raise section.error(
+                "Stepper %s requested itself as endstop" % (endstop_of,))
+
+        # Look for the stepper we want to link with
+        target = next((s for s in rail.steppers if s.get_name() == endstop_of),
+            None)
+        if target is None:
+            raise section.error( "Requested endstop for non-existent stepper"
+                " '%s'" % (endstop_of,))
+
+        endstop_name = target.get_name(short=True)
+        endstop = next((e for (e,n) in rail.endstops if n == endstop_name),
+            None)
+        if endstop is None:
+            raise section.error("Requested endstop for stepper '%s',"
+                " but it doesn't have one" % (endstop_of,))
+
+        endstop.add_stepper(stepper)
+
     return rail
