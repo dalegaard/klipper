@@ -1649,6 +1649,12 @@ at 1 (for example, "stepper_z1", "stepper_z2", etc.).
 #   stepper will home until the endstop is triggered. Otherwise, the
 #   stepper will home until the endstop on the primary stepper for the
 #   axis is triggered.
+#   Mutually exclusive with endstop_of.
+#endstop_of:
+#   If defined, the endstop for the stepper with this name will be used
+#   for homing. Otherwise, the primary endstop for the axis will be used
+#   for homing.
+#   Mutally exclusive with endstop_pin.
 ```
 
 ## [extruder1]
