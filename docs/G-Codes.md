@@ -161,8 +161,7 @@ The following standard commands are supported:
   MINIMUM and/or at or below the supplied MAXIMUM.
 - `SET_VELOCITY_LIMIT [VELOCITY=<value>] [ACCEL=<value>]
   [ACCEL_TO_DECEL=<value>] [SQUARE_CORNER_VELOCITY=<value>]`: Modify
-  the printer's velocity limits. Note that one may only set values
-  less than or equal to the limits specified in the config file.
+  the printer's velocity limits.
 - `SET_HEATER_TEMPERATURE HEATER=<heater_name> [TARGET=<target_temperature>]`:
   Sets the target temperature for a heater. If a target temperature is
   not supplied, the target is 0.
@@ -272,7 +271,7 @@ The following command is available when a
 [neopixel config section](Config_Reference.md#neopixel) or
 [dotstar config section](Config_Reference.md#dotstar) is enabled:
 - `SET_LED LED=<config_name> RED=<value> GREEN=<value> BLUE=<value>
-  WHITE=<value> [INDEX=<index>] [TRANSMIT=0]`: This sets the LED
+  WHITE=<value> [INDEX=<index>] [TRANSMIT=0] [SYNC=1]`: This sets the LED
   output. Each color `<value>` must be between 0.0 and 1.0. The WHITE
   option is only valid on RGBW LEDs. If multiple LED chips are
   daisy-chained then one may specify INDEX to alter the color of just
@@ -281,7 +280,12 @@ The following command is available when a
   to the provided color. If TRANSMIT=0 is specified then the color
   change will only be made on the next SET_LED command that does not
   specify TRANSMIT=0; this may be useful in combination with the INDEX
-  parameter to batch multiple updates in a daisy-chain.
+  parameter to batch multiple updates in a daisy-chain. By default, the
+  SET_LED command will sync it's changes with other ongoing gcode commands.
+  This can lead to undesirable behavior if LEDs are being set while the
+  printer is not printing as it will reset the idle timeout. If careful
+  timing is not needed, the optional SYNC=0 parameter can be specified to
+  apply the changes instantly and not reset the idle timeout.
 
 ## Servo Commands
 
@@ -429,6 +433,10 @@ The following commands are available when the
   supplied name from persistent memory.  Note that after SAVE or
   REMOVE operations have been run the SAVE_CONFIG gcode must be run
   to make the changes to peristent memory permanent.
+- `BED_MESH_OFFSET [X=<value>] [Y=<value>]`:  Applies X and/or Y
+  offsets to the mesh lookup.  This is useful for printers with
+  independent extruders, as an offset is necessary to produce
+  correct Z adjustment after a tool change.
 
 ## Bed Screws Helper
 
@@ -448,12 +456,13 @@ The following commands are available when the
 [screws_tilt_adjust config section](Config_Reference.md#screws_tilt_adjust)
 is enabled (also see the
 [manual level guide](Manual_Level.md#adjusting-bed-leveling-screws-using-the-bed-probe)):
-- `SCREWS_TILT_CALCULATE [<probe_parameter>=<value>]`: This command
-  will invoke the bed screws adjustment tool. It will command the
+- `SCREWS_TILT_CALCULATE [DIRECTION=CW|CCW] [<probe_parameter>=<value>]`:
+  This command will invoke the bed screws adjustment tool. It will command the
   nozzle to different locations (as defined in the config file)
   probing the z height and calculate the number of knob turns to
-  adjust the bed level. See the PROBE command for details on the
-  optional probe parameters.
+  adjust the bed level. If DIRECTION is specified, the knob turns will all
+  be in the same direction, clockwise (CW) or counterclockwise (CCW).
+  See the PROBE command for details on the optional probe parameters.
   IMPORTANT: You MUST always do a G28 before using this command.
 
 ## Z Tilt
@@ -517,15 +526,13 @@ enabled:
   the given distance (in mm) at the given constant velocity (in
   mm/s). If ACCEL is specified and is greater than zero, then the
   given acceleration (in mm/s^2) will be used; otherwise no
-  acceleration is performed. If acceleration is not performed then it
-  can lead to the micro-controller reporting "No next step" errors
-  (avoid these errors by specifying an ACCEL value or use a very low
-  VELOCITY). No boundary checks are performed; no kinematic updates
-  are made; other parallel steppers on an axis will not be moved. Use
-  caution as an incorrect command could cause damage! Using this
-  command will almost certainly place the low-level kinematics in an
-  incorrect state; issue a G28 afterwards to reset the kinematics.
-  This command is intended for low-level diagnostics and debugging.
+  acceleration is performed. No boundary checks are performed; no
+  kinematic updates are made; other parallel steppers on an axis will
+  not be moved. Use caution as an incorrect command could cause
+  damage! Using this command will almost certainly place the low-level
+  kinematics in an incorrect state; issue a G28 afterwards to reset
+  the kinematics. This command is intended for low-level diagnostics
+  and debugging.
 - `SET_KINEMATIC_POSITION [X=<value>] [Y=<value>] [Z=<value>]`: Force
   the low-level kinematic code to believe the toolhead is at the given
   cartesian position. This is a diagnostic and debugging command; use
@@ -535,6 +542,17 @@ enabled:
   may lead to internal software errors. This command may invalidate
   future boundary checks; issue a G28 afterwards to reset the
   kinematics.
+
+## SDcard loop
+
+When the [sdcard_loop config section](Config_Reference.md#sdcard_loop)
+is enabled, the following extended commands are available:
+- `SDCARD_LOOP_BEGIN COUNT=<count>`: Begin a looped section in the SD
+  print. A count of 0 indicates that the section should be looped
+  indefinately.
+- `SDCARD_LOOP_END`: End a looped section in the SD print.
+- `SDCARD_LOOP_DESIST`: Complete existing loops without further
+  iterations.
 
 ## Send message (respond) to host
 
@@ -570,6 +588,7 @@ enabled:
   print. This is useful if one decides to cancel a print after a
   PAUSE. It is recommended to add this to your start gcode to make
   sure the paused state is fresh for each print.
+- `CANCEL_PRINT`: Cancels the current print.
 
 ## Filament Sensor
 
@@ -717,6 +736,13 @@ The following commands are available when an
   is used. This command is useful to test the connection to the
   ADXL345 accelerometer: one of the returned values should be a
   free-fall acceleration (+/- some noise of the chip).
+- `ADXL345_DEBUG_READ [CHIP=<config_name>] REG=<register>`: queries
+  ADXL345 register <register> (e.g. 44 or 0x2C). Can be useful for
+  debugging purposes.
+- `ADXL345_DEBUG_WRITE [CHIP=<config_name>] REG=<reg> VAL=<value>`:
+  writes raw <value> into a register <register>. Both <value> and
+  <register> can be a decimal or a hexadecimal integer. Use with care,
+  and refer to ADXL345 data sheet for the reference.
 
 ## Resonance Testing Commands
 
@@ -729,9 +755,13 @@ is enabled (also see the
 - `TEST_RESONANCES AXIS=<axis> OUTPUT=<resonances,raw_data>
   [NAME=<name>] [FREQ_START=<min_freq>] [FREQ_END=<max_freq>]
   [HZ_PER_SEC=<hz_per_sec>] [INPUT_SHAPING=[<0:1>]]`: Runs the resonance
-  test in all configured probe points for the requested axis (X or Y)
+  test in all configured probe points for the requested <axis>
   and measures the acceleration using the accelerometer chips configured
-  for the respective axis. If `INPUT_SHAPING=0` or not set (default),
+  for the respective axis. <axis> can either be X or Y, or specify an
+  arbitrary direction as `AXIS=dx,dy`, where dx and dy are floating point
+  numbers defining a direction vector (e.g. `AXIS=X`, `AXIS=Y`, or
+  `AXIS=1,-1` to define a diagonal direction). Note that `AXIS=dx,dy` and
+  `AXIS=-dx,-dy` is equivalent. If `INPUT_SHAPING=0` or not set (default),
   disables input shaping for the resonance testing, because it is not valid
   to run the resonance testing with the input shaper enabled.
   `OUTPUT` parameter is a comma-separated list of which outputs will be

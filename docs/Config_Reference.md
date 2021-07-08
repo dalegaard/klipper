@@ -82,7 +82,8 @@ The printer section controls high level printer settings.
 [printer]
 kinematics:
 #   The type of printer in use. This option may be one of: cartesian,
-#   corexy, corexz, delta, rotary_delta, polar, winch, or none. This
+#   corexy, corexz, hybrid-corexy, hybrid-corexz, rotary_delta, delta,
+#   polar, winch, or none. This
 #   parameter must be specified.
 max_velocity:
 #   Maximum velocity (in mm/s) of the toolhead (relative to the
@@ -131,7 +132,8 @@ enable_pin:
 #   driver must always be enabled.
 rotation_distance:
 #   Distance (in mm) that the axis travels with one full rotation of
-#   the stepper motor. This parameter must be provided.
+#   the stepper motor (or final gear if gear_ratio is specified).
+#   This parameter must be provided.
 microsteps:
 #   The number of microsteps the stepper motor driver uses. This
 #   parameter must be provided.
@@ -362,6 +364,74 @@ max_z_accel:
 
 # The stepper_z section is used to describe the Z axis as well as the
 # stepper controlling the X-Z movement.
+[stepper_z]
+```
+
+## Hybrid-CoreXY Kinematics
+
+See [example-hybrid-corexy.cfg](../config/example-hybrid-corexy.cfg)
+for an example hybrid corexy kinematics config file.
+
+This kinematic is also known as Markforged kinematic.
+
+Only parameters specific to hybrid corexy printers are described here
+see [common kinematic settings](#common-kinematic-settings) for available
+parameters.
+
+```
+[printer]
+kinematics: hybrid_corexy
+max_z_velocity:
+#   This sets the maximum velocity (in mm/s) of movement along the z
+#   axis. The default is to use max_velocity for max_z_velocity.
+max_z_accel:
+#   This sets the maximum acceleration (in mm/s^2) of movement along
+#   the z axis. The default is to use max_accel for max_z_accel.
+
+# The stepper_x section is used to describe the X axis as well as the
+# stepper controlling the X-Y movement.
+[stepper_x]
+
+# The stepper_y section is used to describe the stepper controlling
+# the Y axis.
+[stepper_y]
+
+# The stepper_z section is used to describe the stepper controlling
+# the Z axis.
+[stepper_z]
+```
+
+## Hybrid-CoreXZ Kinematics
+
+See [example-hybrid-corexz.cfg](../config/example-hybrid-corexz.cfg)
+for an example hybrid corexz kinematics config file.
+
+This kinematic is also known as Markforged kinematic.
+
+Only parameters specific to hybrid corexy printers are described here
+see [common kinematic settings](#common-kinematic-settings) for available
+parameters.
+
+```
+[printer]
+kinematics: hybrid_corexz
+max_z_velocity:
+#   This sets the maximum velocity (in mm/s) of movement along the z
+#   axis. The default is to use max_velocity for max_z_velocity.
+max_z_accel:
+#   This sets the maximum acceleration (in mm/s^2) of movement along
+#   the z axis. The default is to use max_accel for max_z_accel.
+
+# The stepper_x section is used to describe the X axis as well as the
+# stepper controlling the X-Z movement.
+[stepper_x]
+
+# The stepper_y section is used to describe the stepper controlling
+# the Y axis.
+[stepper_y]
+
+# The stepper_z section is used to describe the stepper controlling
+# the Z axis.
 [stepper_z]
 ```
 
@@ -645,9 +715,6 @@ pid_Ki:
 pid_Kd:
 #   Kd is the "derivative" constant for the pid. This parameter must
 #   be provided for PID heaters.
-#pid_integral_max:
-#   The maximum "windup" the integral term may accumulate. The default
-#   is to use the same value as max_power.
 #max_delta: 2.0
 #   On 'watermark' controlled heaters this is the number of degrees in
 #   Celsius above the target temperature before disabling the heater
@@ -1059,11 +1126,8 @@ home_xy_position:
 #   applied to any homing command, even if it doesn't home the Z axis.
 #   If the Z axis is already homed and the current Z position is less
 #   than z_hop, then this will lift the head to a height of z_hop. If
-#   the Z axis is not already homed, then prior to any XY homing
-#   movement the Z axis boundary checks are disabled and the head is
-#   lifted by z_hop. If z_hop is specified, be sure to home the Z
-#   immediately after any XY home requests so that the Z boundary
-#   checks are accurate. The default is to not implement Z hop.
+#   the Z axis is not already homed the head is lifted by z_hop.
+#   The default is to not implement Z hop.
 #z_hop_speed: 20.0
 #   Speed (in mm/s) at which the Z axis is lifted prior to homing. The
 #   default is 20mm/s.
@@ -1155,16 +1219,6 @@ G-Code macros (one may define any number of sections with a
 #   A list of G-Code commands to execute in place of "my_cmd". See
 #   docs/Command_Templates.md for G-Code format. This parameter must
 #   be provided.
-#default_parameter_<parameter>:
-#   One may define any number of options with a "default_parameter_"
-#   prefix. Use this to define default values for g-code parameters.
-#   For example, if one were to define the macro MY_DELAY with gcode
-#   "G4 P{DELAY}" along with "default_parameter_DELAY = 50" then the
-#   command "MY_DELAY" would evaluate to "G4 P50". To override the
-#   default parameter when calling the command then using
-#   "MY_DELAY DELAY=30" would evaluate to "G4 P30". The default is
-#   to require that all parameters used in the gcode script be
-#   present in the command invoking the macro.
 #variable_<name>:
 #   One may specify any number of options with a "variable_" prefix.
 #   The given variable name will be assigned the given value (parsed
@@ -1181,6 +1235,9 @@ G-Code macros (one may define any number of sections with a
 #   commands. Care should be taken when overriding commands as it can
 #   cause complex and unexpected results. The default is to not
 #   override an existing G-Code command.
+#description: G-Code macro
+#   This will add a short description used at the HELP command or while
+#   using the auto completion feature. Default "G-Code macro"
 ```
 
 ## [delayed_gcode]
@@ -1251,6 +1308,21 @@ path:
 #   are not supported). One may point this to OctoPrint's upload
 #   directory (generally ~/.octoprint/uploads/ ). This parameter must
 #   be provided.
+```
+
+## [sdcard_loop]
+
+Some printers with stage-clearing features, such as a part ejector or
+a belt printer, can find use in looping sections of the sdcard file.
+(For example, to print the same part over and over, or repeat the
+a section of a part for a chain or other repeated pattern).
+
+See the [command reference](G-Codes.md#sdcard-loop) for supported
+commands. See the [sample-macros.cfg](../config/sample-macros.cfg)
+file for a Marlin compatible M808 G-Code macro.
+
+```
+[sdcard_loop]
 ```
 
 ## [force_move]
@@ -1502,6 +1574,22 @@ main printer config file. Wildcards may also be used (eg,
 [include my_other_config.cfg]
 ```
 
+## [duplicate_pin_override]
+
+This tool allows a single micro-controller pin to be defined multiple
+times in a config file without normal error checking. This is intended
+for diagnostic and debugging purposes. This section is not needed
+where Klipper supports using the same pin multiple times, and using
+this override may cause confusing and unexpected results.
+
+```
+[duplicate_pin_override]
+pins:
+#   A comma separated list of pins that may be used multiple times in
+#   a config file without normal error checks. This parameter must be
+#   provided.
+```
+
 # Bed probing hardware
 
 ## [probe]
@@ -1520,6 +1608,10 @@ stepper_z config section.
 [probe]
 pin:
 #   Probe detection pin. This parameter must be provided.
+#deactivate_on_each_sample: True
+#   This determines if Klipper should execute deactivation gcode
+#   between each probe attempt when performing a multiple probe
+#   sequence. The default is True.
 #x_offset: 0.0
 #   The distance (in mm) between the probe and the nozzle along the
 #   x-axis. The default is 0.
@@ -1917,7 +2009,6 @@ temperature.
 #pid_Kp:
 #pid_Ki:
 #pid_Kd:
-#pid_integral_max:
 #pwm_cycle_time:
 #min_temp:
 #max_temp:
@@ -2357,7 +2448,6 @@ additional information.
 #pid_Ki:
 #pid_Kd:
 #pid_deriv_time:
-#pid_integral_max:
 #max_delta:
 #min_temp:
 #max_temp:
@@ -3386,12 +3476,12 @@ text:
 
 ## [display_template]
 
-Display data text "macros" (one may define any number of sections
-with a display_template prefix). This feature allows one to reduce
+Display data text "macros" (one may define any number of sections with
+a display_template prefix). This feature allows one to reduce
 repetitive definitions in display_data sections. One may use the
 builtin render() function in display_data sections to evaluate a
-template. For example, if one were to define [display_template
-my_template] then one could use `{ render('my_template') }` in a
+template. For example, if one were to define `[display_template
+my_template]` then one could use `{ render('my_template') }` in a
 display_data section.
 
 ```
@@ -3461,25 +3551,9 @@ A [default set of menus](../klippy/extras/display/menu.cfg) are
 automatically created. One can replace or extend the menu by
 overriding the defaults in the main printer.cfg config file.
 
-Available options in menu Jinja2 template context:
-
-Read-only attributes for menu element:
-* menu.width - element width (number of display columns)
-* menu.ns - element namespace
-* menu.event - name of the event that triggered the script
-* menu.input - input value, only available in input script context
-
-List of actions for menu element:
-* menu.back(force, update): will execute menu back command, optional
-  boolean parameters <force> and <update>.
-  * When <force> is set True then it will also stop editing. Default
-    value is False
-  * When <update> is set False then parent container items are not
-    updated. Default value is True
-* menu.exit(force) - will execute menu exit command, optional boolean
-  parameter <force> default value False
-  * When <force> is set True then it will also stop editing. Default
-    value is False
+See the
+[command template document](Command_Templates.md#menu-templates) for
+information on menu attributes available during template rendering.
 
 ```
 # Common parameters available for all menu config sections.
@@ -3725,13 +3799,17 @@ i2c_address:
 ## [samd_sercom]
 
 SAMD SERCOM configuration to specify which pins to use on a given
-SERCOM. One may define one section with the "samd_sercom" prefix per
-SERCOM available. Each SERCOM must be configured prior to using it as
-SPI or I2C peripheral. Place this config section above any other
-section that makes use of SPI or I2C buses.
+SERCOM. One may define any number of sections with a "samd_sercom"
+prefix. Each SERCOM must be configured prior to using it as SPI or I2C
+peripheral. Place this config section above any other section that
+makes use of SPI or I2C buses.
 
 ```
-[samd_sercom sercom0]
+[samd_sercom my_sercom]
+sercom:
+#   The name of the sercom bus to configure in the micro-controller.
+#   Available names are "sercom0", "sercom1", etc.. This parameter
+#   must be provided.
 tx_pin:
 #   MOSI pin for SPI communication, or SDA (data) pin for I2C
 #   communication. The pin must have a valid pinmux configuration
@@ -3839,6 +3917,42 @@ host_mcu:
 #   (True sets CFG5 high, False sets it low). The default is True.
 ```
 
+# Other Custom Modules
+
+## [palette2]
+
+Palette 2 multimaterial support - provides a tighter integration
+supporting Palette 2 devices in connected mode.
+
+This modules also requires `[virtual_sdcard]` and `[pause_resume]`
+for full functionality.
+
+If you use this module, do not use the Palette 2 plugin for
+Octoprint as they will conflict, and 1 will fail to initialize
+properly likely aborting your print.
+
+If you use Octoprint and stream gcode over the serial port instead of
+printing from virtual_sd, then remo **M1** and **M0** from *Pausing commands*
+in *Settings > Serial Connection > Firmware & protocol* will prevent
+the need to start print on the Palette 2 and unpausing in Octoprint
+for your print to begin.
+
+```
+[palette2]
+serial:
+#   The serial port to connect to the Palette 2.
+#baud: 115200
+#   The baud rate to use. The default is 115200.
+#feedrate_splice: 0.8
+#   The feedrate to use when splicing, default is 0.8
+#feedrate_normal: 1.0
+#   The feedrate to use after splicing, default is 1.0
+#auto_load_speed: 2
+#   Extrude feedrate when autoloading, default is 2 (mm/s)
+#auto_cancel_variation: 0.1
+#   Auto cancel print when ping varation is above this threshold
+```
+
 # Common bus parameters
 
 ## Common SPI settings
@@ -3883,40 +3997,4 @@ I2C bus.
 #   The I2C speed (in Hz) to use when communicating with the device.
 #   On some micro-controllers changing this value has no effect. The
 #   default is 100000.
-```
-
-# Other Custom Modules
-
-## [palette2]
-
-Palette 2 multimaterial support - provides a tighter integration
-supporting Palette 2 devices in connected mode.
-
-This modules also requires `[virtual_sdcard]` and `[pause_resume]`
-for full functionality.
-
-If you use this module, do not use the Palette 2 plugin for
-Octoprint as they will conflict, and 1 will fail to initialize
-properly likely aborting your print.
-
-If you use Octoprint and stream gcode over the serial port instead of
-printing from virtual_sd, then remo **M1** and **M0** from *Pausing commands*
-in *Settings > Serial Connection > Firmware & protocol* will prevent
-the need to start print on the Palette 2 and unpausing in Octoprint
-for your print to begin.
-
-```
-[palette2]
-serial:
-#   The serial port to connect to the Palette 2.
-#baud: 115200
-#   The baud rate to use. The default is 115200.
-#feedrate_splice: 0.8
-#   The feedrate to use when splicing, default is 0.8
-#feedrate_normal: 1.0
-#   The feedrate to use after splicing, default is 1.0
-#auto_load_speed: 2
-#   Extrude feedrate when autoloading, default is 2 (mm/s)
-#auto_cancel_variation: 0.1
-#   Auto cancel print when ping varation is above this threshold
 ```

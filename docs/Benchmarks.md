@@ -92,9 +92,9 @@ The following configuration sequence is used on AVR chips:
 ```
 PINS arduino
 allocate_oids count=3
-config_stepper oid=0 step_pin=ar29 dir_pin=ar28 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=ar27 dir_pin=ar26 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=ar23 dir_pin=ar22 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=ar29 dir_pin=ar28 invert_step=0
+config_stepper oid=1 step_pin=ar27 dir_pin=ar26 invert_step=0
+config_stepper oid=2 step_pin=ar23 dir_pin=ar22 invert_step=0
 finalize_config crc=0
 ```
 
@@ -114,9 +114,9 @@ results match tests on both a 16Mhz at90usb and a 16Mhz atmega2560).
 The following configuration sequence is used on the Due:
 ```
 allocate_oids count=3
-config_stepper oid=0 step_pin=PB27 dir_pin=PA21 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=PB26 dir_pin=PC30 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=PA21 dir_pin=PC30 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=PB27 dir_pin=PA21 invert_step=0
+config_stepper oid=1 step_pin=PB26 dir_pin=PC30 invert_step=0
+config_stepper oid=2 step_pin=PA21 dir_pin=PC30 invert_step=0
 finalize_config crc=0
 ```
 
@@ -136,9 +136,9 @@ The test was last run on commit `8d4a5c16` with gcc version
 The following configuration sequence is used on the Duet Maestro:
 ```
 allocate_oids count=3
-config_stepper oid=0 step_pin=PC26 dir_pin=PC18 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=PC26 dir_pin=PA8 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=PC26 dir_pin=PB4 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=PC26 dir_pin=PC18 invert_step=0
+config_stepper oid=1 step_pin=PC26 dir_pin=PA8 invert_step=0
+config_stepper oid=2 step_pin=PC26 dir_pin=PB4 invert_step=0
 finalize_config crc=0
 ```
 
@@ -158,10 +158,10 @@ The test was last run on commit `8d4a5c16` with gcc version
 The following configuration sequence is used on the Duet Wifi:
 ```
 allocate_oids count=4
-config_stepper oid=0 step_pin=PD6 dir_pin=PD11 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=PD7 dir_pin=PD12 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=PD8 dir_pin=PD13 min_stop_interval=0 invert_step=0
-config_stepper oid=3 step_pin=PD5 dir_pin=PA1 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=PD6 dir_pin=PD11 invert_step=0
+config_stepper oid=1 step_pin=PD7 dir_pin=PD12 invert_step=0
+config_stepper oid=2 step_pin=PD8 dir_pin=PD13 invert_step=0
+config_stepper oid=3 step_pin=PD5 dir_pin=PA1 invert_step=0
 finalize_config crc=0
 
 ```
@@ -183,9 +183,9 @@ The following configuration sequence is used on the PRU:
 ```
 PINS beaglebone
 allocate_oids count=3
-config_stepper oid=0 step_pin=P8_13 dir_pin=P8_12 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=P8_15 dir_pin=P8_14 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=P8_19 dir_pin=P8_18 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=P8_13 dir_pin=P8_12 invert_step=0
+config_stepper oid=1 step_pin=P8_15 dir_pin=P8_14 invert_step=0
+config_stepper oid=2 step_pin=P8_19 dir_pin=P8_18 invert_step=0
 finalize_config crc=0
 ```
 
@@ -203,9 +203,9 @@ The test was last run on commit `b161a69e` with gcc version `pru-gcc
 The following configuration sequence is used on the STM32F042:
 ```
 allocate_oids count=3
-config_stepper oid=0 step_pin=PA1 dir_pin=PA2 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=PA3 dir_pin=PA2 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=PB8 dir_pin=PA2 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=PA1 dir_pin=PA2 invert_step=0
+config_stepper oid=1 step_pin=PA3 dir_pin=PA2 invert_step=0
+config_stepper oid=2 step_pin=PB8 dir_pin=PA2 invert_step=0
 finalize_config crc=0
 ```
 
@@ -223,9 +223,9 @@ The test was last run on commit `0b0c47c5` with gcc version
 The following configuration sequence is used on the STM32F103:
 ```
 allocate_oids count=3
-config_stepper oid=0 step_pin=PC13 dir_pin=PB5 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=PB3 dir_pin=PB6 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=PA4 dir_pin=PB7 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=PC13 dir_pin=PB5 invert_step=0
+config_stepper oid=1 step_pin=PB3 dir_pin=PB6 invert_step=0
+config_stepper oid=2 step_pin=PA4 dir_pin=PB7 invert_step=0
 finalize_config crc=0
 ```
 
@@ -245,10 +245,10 @@ The test was last run on commit `8d4a5c16` with gcc version
 The following configuration sequence is used on the STM32F4:
 ```
 allocate_oids count=4
-config_stepper oid=0 step_pin=PA5 dir_pin=PB5 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=PB2 dir_pin=PB6 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=PB3 dir_pin=PB7 min_stop_interval=0 invert_step=0
-config_stepper oid=3 step_pin=PB3 dir_pin=PB8 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=PA5 dir_pin=PB5 invert_step=0
+config_stepper oid=1 step_pin=PB2 dir_pin=PB6 invert_step=0
+config_stepper oid=2 step_pin=PB3 dir_pin=PB7 invert_step=0
+config_stepper oid=3 step_pin=PB3 dir_pin=PB8 invert_step=0
 finalize_config crc=0
 ```
 
@@ -280,9 +280,9 @@ using a 168Mhz clock).
 The following configuration sequence is used on the LPC176x:
 ```
 allocate_oids count=3
-config_stepper oid=0 step_pin=P1.20 dir_pin=P1.18 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=P1.21 dir_pin=P1.18 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=P1.23 dir_pin=P1.18 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=P1.20 dir_pin=P1.18 invert_step=0
+config_stepper oid=1 step_pin=P1.21 dir_pin=P1.18 invert_step=0
+config_stepper oid=2 step_pin=P1.23 dir_pin=P1.18 invert_step=0
 finalize_config crc=0
 ```
 
@@ -311,9 +311,9 @@ results were obtained by overclocking an LPC1768 to 120Mhz.
 The following configuration sequence is used on the SAMD21:
 ```
 allocate_oids count=3
-config_stepper oid=0 step_pin=PA27 dir_pin=PA20 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=PB3 dir_pin=PA21 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=PA17 dir_pin=PA21 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=PA27 dir_pin=PA20 invert_step=0
+config_stepper oid=1 step_pin=PB3 dir_pin=PA21 invert_step=0
+config_stepper oid=2 step_pin=PA17 dir_pin=PA21 invert_step=0
 finalize_config crc=0
 ```
 
@@ -334,11 +334,11 @@ micro-controller.
 The following configuration sequence is used on the SAMD51:
 ```
 allocate_oids count=5
-config_stepper oid=0 step_pin=PA22 dir_pin=PA20 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=PA22 dir_pin=PA21 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=PA22 dir_pin=PA19 min_stop_interval=0 invert_step=0
-config_stepper oid=3 step_pin=PA22 dir_pin=PA18 min_stop_interval=0 invert_step=0
-config_stepper oid=4 step_pin=PA23 dir_pin=PA17 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=PA22 dir_pin=PA20 invert_step=0
+config_stepper oid=1 step_pin=PA22 dir_pin=PA21 invert_step=0
+config_stepper oid=2 step_pin=PA22 dir_pin=PA19 invert_step=0
+config_stepper oid=3 step_pin=PA22 dir_pin=PA18 invert_step=0
+config_stepper oid=4 step_pin=PA23 dir_pin=PA17 invert_step=0
 finalize_config crc=0
 ```
 
@@ -360,26 +360,52 @@ micro-controller.
 | 1 stepper (no delay) | 42    |
 | 3 stepper (no delay) | 194   |
 
+### RP2040 step rate benchmark ###
+
+The following configuration sequence is used on the RP2040:
+
+```
+allocate_oids count=4
+config_stepper oid=0 step_pin=gpio25 dir_pin=gpio3 invert_step=0
+config_stepper oid=1 step_pin=gpio26 dir_pin=gpio4 invert_step=0
+config_stepper oid=2 step_pin=gpio27 dir_pin=gpio5 invert_step=0
+config_stepper oid=3 step_pin=gpio28 dir_pin=gpio6 invert_step=0
+finalize_config crc=0
+```
+
+The test was last run on commit `c5667193` with gcc version
+`arm-none-eabi-gcc (Fedora 10.2.0-4.fc34) 10.2.0` on a Raspberry Pi
+Pico board.
+
+| rp2040               | ticks |
+| -------------------- | ----- |
+| 1 stepper            | 52    |
+| 2 stepper            | 52    |
+| 3 stepper            | 52    |
+| 4 stepper            | 66    |
+| 1 stepper (no delay) | 5     |
+| 3 stepper (no delay) | 22    |
+
 ### Linux MCU step rate benchmark ###
 
 The following configuration sequence is used on a Raspberry Pi:
 ```
 allocate_oids count=3
-config_stepper oid=0 step_pin=gpio2 dir_pin=gpio3 min_stop_interval=0 invert_step=0
-config_stepper oid=1 step_pin=gpio4 dir_pin=gpio5 min_stop_interval=0 invert_step=0
-config_stepper oid=2 step_pin=gpio6 dir_pin=gpio7 min_stop_interval=0 invert_step=0
+config_stepper oid=0 step_pin=gpio2 dir_pin=gpio3 invert_step=0
+config_stepper oid=1 step_pin=gpio4 dir_pin=gpio5 invert_step=0
+config_stepper oid=2 step_pin=gpio6 dir_pin=gpio7 invert_step=0
 finalize_config crc=0
 ```
 
-The test was last run on commit `06437c58` with gcc version `gcc
+The test was last run on commit `db0fb5d5` with gcc version `gcc
 (Raspbian 6.3.0-18+rpi1+deb9u1) 6.3.0 20170516` on a Raspberry Pi 3
 (revision a22082).
 
 | Linux (RPi3)         | ticks |
 | -------------------- | ----- |
-| 1 stepper            | 340   |
-| 2 stepper            | 356   |
-| 3 stepper            | 450   |
+| 1 stepper            | 349   |
+| 2 stepper            | 350   |
+| 3 stepper            | 400   |
 
 ## Command dispatch benchmark ##
 
@@ -390,7 +416,7 @@ communication mechanism. The test is run using the console.py tool
 cut-and-paste into the console.py terminal window:
 ```
 DELAY {clock + 2*freq} get_uptime
-FLOOD 100000 0.0 end_group
+FLOOD 100000 0.0 debug_nop
 get_uptime
 ```
 
@@ -420,6 +446,7 @@ hub.
 | sam4s8c (USB)       | 650K | 8d4a5c16 | arm-none-eabi-gcc (Fedora 7.4.0-1.fc30) 7.4.0 |
 | samd51 (USB)        | 864K | 01d2183f | arm-none-eabi-gcc (Fedora 7.4.0-1.fc30) 7.4.0 |
 | stm32f446 (USB)     | 870K | 01d2183f | arm-none-eabi-gcc (Fedora 7.4.0-1.fc30) 7.4.0 |
+| rp2040 (USB)        | 873K | c5667193 | arm-none-eabi-gcc (Fedora 10.2.0-4.fc34) 10.2.0 |
 
 Host Benchmarks
 ===============
